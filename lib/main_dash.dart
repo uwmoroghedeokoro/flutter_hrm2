@@ -322,7 +322,8 @@ Widget new_main()
                           future: _getData(),
                         builder: (BuildContext context,AsyncSnapshot snapshot){
                           if(snapshot.connectionState == ConnectionState.done)
-                            return new  PieChart(
+                            return new
+                            PieChart(
                               chartType: ChartType.ring,
                               chartLegendSpacing: 52,
                               animationDuration: Duration(milliseconds: 800),

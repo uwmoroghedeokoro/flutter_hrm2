@@ -25,7 +25,7 @@ class LeaveTab extends StatefulWidget {
 class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
   int _page = 0;
   GlobalKey _bottomNavigationKey = GlobalKey();
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<leave_entitlement> my_entitements=[];
   List<leave_status> my_status=[];
   List<leave_status> team_status=[];
@@ -109,6 +109,7 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
+          team_status=[];
           for(Map i in data){
             team_status.add(leave_status.fromJson(i));
           }
@@ -323,14 +324,18 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
   Widget team_status_page()
   {
     return  Scaffold(
+      key: _scaffoldKey,
         body: Container(
           color:HexColor("#F7F8FE"),
-          child:new ListView.builder(
-            padding: const  EdgeInsets.only(top:18.0,left:8.0,right:8.0,bottom: 0.0),
+          child:
 
+             new ListView.builder(
+            padding: const  EdgeInsets.only(top:18.0,left:8.0,right:8.0,bottom: 0.0),
             itemCount: team_status==null? 0: team_status.length,
             itemBuilder: (BuildContext context, int index){
-              return Container(
+
+              return
+                Container(
                   padding: EdgeInsets.only(top:1.0,left:20.0,right:20.0,bottom: 10.0),
                   child: Column (
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -361,6 +366,24 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
     minWidth: double.infinity,
     padding: EdgeInsets.all(10.0),
     child: RaisedButton(
+      onPressed: (){
+        _scaffoldKey.currentState.showSnackBar(
+            new SnackBar( //duration: new Duration(seconds: 4),
+              content:
+              new Row(
+                children: <Widget>[
+                  new CircularProgressIndicator(),
+                  new Text("  Please wait.")
+                ],
+              ),
+            ));
+        submit_response(team_status[index]).then((result) {
+         setState(() {
+          print('done');
+           this.getData_Team();
+         });
+        });
+      },
       padding: EdgeInsets.all(7),
       splashColor: Colors.green,
       color: Colors.greenAccent,
@@ -389,8 +412,41 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
               );
             },
           ),
+
+
+
         )
     );
+  }
+
+
+  Future<bool> submit_response(leave_status leave_req) async {
+    bool res=false;
+    String sel_dates='';
+print(leave_req.req_id);
+    var response = await http.post(
+        Uri.encodeFull("http://63.143.64.98:8090/api/request_response/"),
+
+        body: {
+          'empid': leave_req.emp_id.toString(),
+          'userid': widget.myEmp.recid.toString(),
+          'leaveid':leave_req.leave_id.toString(),
+          'reqdays': leave_req.req_days.toString(),
+          'nstatus': "1",
+          'reqid': leave_req.req_id.toString(),
+        }
+
+    );
+
+    if (response.statusCode == 200) {
+      res=true;
+      print (response.body);
+      //print(response.body['myJob']['jTitle']['title']);
+    } else {
+      print (response.body);
+    }
+    return res;
+
   }
 
 
