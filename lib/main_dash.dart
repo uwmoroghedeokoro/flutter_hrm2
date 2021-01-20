@@ -10,6 +10,7 @@ import 'package:flutter_hrm/employee.dart';
 import 'package:flutter_hrm/employment_info_page.dart';
 import 'package:flutter_hrm/leave_tab.dart';
 import 'package:flutter_hrm/message_note.dart';
+import 'package:flutter_hrm/notifications_page.dart';
 import 'package:flutter_hrm/personal_info_page.dart';
 import 'package:flutter_hrm/salary_info_page.dart';
 import 'package:flutter_hrm/shift_page.dart';
@@ -76,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       TabData(iconData: Icons.airplanemode_active_rounded,
                           title: "Leaves"),
                       TabData(iconData: Icons.calendar_today, title: "Shifts"),
-                      TabData(iconData: Icons.article_rounded, title: "Timeline")
+                      TabData(iconData: Icons.article_rounded, title: "Notifications")
                     ],
                     onTabChangedListener: (position) {
                       setState(() {
@@ -103,9 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 2:
       //if(!personal_info_page(myEmp: widget.myEmp).vis) personal_info_page(myEmp: widget.myEmp).vis=true; else personal_info_page(myEmp: widget.myEmp).vis=true;
         return shift_page(myEmp: widget.myEmp);
-      case 4:
+      case 3:
         //if(!personal_info_page(myEmp: widget.myEmp).vis) personal_info_page(myEmp: widget.myEmp).vis=true; else personal_info_page(myEmp: widget.myEmp).vis=true;
-        return personal_info_page(myEmp: widget.myEmp,vis:true);
+        return notifications_page(emp: widget.myEmp);
       case 5:
         return employment_info_page(myEmp: widget.myEmp,vis:true);
       case 6:
@@ -264,8 +265,7 @@ Widget new_main()
                                        shape: BoxShape.circle,color:Colors.indigoAccent,border:Border.all(width: 4,color: Colors.blue,),
                                        image: DecorationImage(
                                            fit: BoxFit.fill,
-                                           image: AssetImage(
-                                               "images/prof.jpg")
+                                         image: new AssetImage('images/defpic.png'),
                                        )
                                    ),
 
@@ -467,7 +467,9 @@ Widget new_main()
                                                      width: 30, height: 30,
                                                      decoration: BoxDecoration(
                                                          shape: BoxShape.circle,color:Colors.blueGrey,
-
+                                                       image: new DecorationImage(
+                                                         image: new AssetImage('images/defpic.png')
+                                                       )
                                                      ),
 
                                                    ),
