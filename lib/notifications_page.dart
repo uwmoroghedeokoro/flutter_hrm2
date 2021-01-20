@@ -36,7 +36,7 @@ class notifications_home extends  State<notifications_page>{
       ),
         body: Container(
           padding: EdgeInsets.all(0),
-          color: Colors.grey[150],
+          color: HexColor("#F7F8FE"),
           child: FutureBuilder(
             future: _getTrails(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -83,7 +83,7 @@ class notifications_home extends  State<notifications_page>{
                             top: 0.0, bottom: 0.0),
                         width: 40, height: 40,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,color:Colors.blueGrey,
+                        //  shape: BoxShape.circle,color:Colors.blueGrey,
                           image: new DecorationImage(
                             image: new AssetImage('images/defpic.png'),
                             fit: BoxFit.cover,
