@@ -164,7 +164,8 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
       ],
     controller: _tabController,
     ),
-     floatingActionButton: FloatingActionButton(
+     floatingActionButton:
+     FloatingActionButton(
        backgroundColor: Colors.blue,
        child: Icon(
          Icons.add

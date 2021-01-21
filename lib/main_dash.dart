@@ -466,7 +466,7 @@ Widget new_main()
                                                          top: 0.0, bottom: 0.0),
                                                      width: 30, height: 30,
                                                      decoration: BoxDecoration(
-                                                         shape: BoxShape.circle,color:Colors.blueGrey,
+                                                        // shape: BoxShape.circle,color:Colors.blueGrey,
                                                        image: new DecorationImage(
                                                          image: new AssetImage('images/defpic.png')
                                                        )
@@ -491,6 +491,48 @@ Widget new_main()
                                            ),
                                            SizedBox(height: 10,),
                                            Text(this_trail.postedMessage,style:TextStyle(color:Colors.black54,fontSize: 14)),
+                                              if (this_trail.postedDoc.contains('.pdf'))
+                                                Container(
+                                                    padding: const EdgeInsets.all(5.0),
+                                                    margin: const EdgeInsets.only(top:15),
+                                                    // color:Colors.grey[100],
+                                                    decoration: BoxDecoration(
+                                                        color:Colors.grey[100],
+                                                        borderRadius: new BorderRadius.all(Radius.circular(5.0)),
+                                                        border:  Border.all(color:Colors.black12)
+                                                    ),
+                                                    child:
+                                                    GestureDetector(
+                                                        onTap: (){
+                                                          Navigator.push(context, MaterialPageRoute(builder: (context)=> view_pdf(pdf_path: this_trail.postedDoc)));
+                                                        },
+                                                        child:
+                                                        Row(
+                                                          children: [
+                                                            CircleAvatar(
+                                                              radius: 18.0,
+                                                              backgroundImage:
+                                                              AssetImage('images/pdficon.png'),
+                                                              backgroundColor: Colors.red,
+                                                            ),
+                                                            Text(' View Attachment',style: TextStyle(fontSize: 14,color:Colors.black54,fontWeight: FontWeight.bold),)
+                                                          ],
+                                                        )
+                                                    )
+                                                )
+                                              else if(this_trail.postedDoc.contains('.png' ) || this_trail.postedDoc.contains('.jpg') || this_trail.postedDoc.contains('.jpeg'))
+                                                Container(
+                                                    width:double.infinity,
+                                                    // margin:EdgeInsets.only(top:10),
+                                                    padding: const EdgeInsets.all(3.0),
+                                                    margin: const EdgeInsets.only(top:15),
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: new BorderRadius.all(Radius.circular(5.0)),
+                                                        border:  Border.all(color:Colors.black12)
+                                                    ),
+                                                    child:
+                                                    Image.network('http://63.143.64.98:8070/sharePhotos/' + this_trail.postedDoc)
+                                                )
                                      ]
                                      )
                                            else

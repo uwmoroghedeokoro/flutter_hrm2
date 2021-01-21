@@ -20,30 +20,28 @@ class Login extends StatelessWidget{
      Scaffold(
        key:_scaffoldKey,
        body:Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("images/bg1.jpg"),
-            fit:BoxFit.fill
-          ),
-
-        ),
+       // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("images/bg1.jpg"), fit:BoxFit.fill),),
+         color: Colors.grey[50],
         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
+                flex: 1,
               child:Container(
                 padding: EdgeInsets.all(30.0),
-                alignment: Alignment.center,
+                alignment: Alignment.bottomCenter,
+
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                    Container (
                      margin: EdgeInsets.only(bottom:30,top:20),
-                       child:Image.asset("images/hr_logo.png",height: 100,width: 100)
+                       child:Image.asset("images/grp.png",height: 50,width: 50)
                    ),
-                   Text('Login to', style: TextStyle(fontSize: 25.0,color: Colors.white)),
-                   Text('Mango HR',style:TextStyle(fontSize: 40.0,color: Colors.white,fontWeight: FontWeight.bold))
+                   Text('Login to', style: TextStyle(fontSize: 20.0,color: Colors.lightBlue)),
+                   Text('Mango HR',style:TextStyle(fontSize: 35.0,color: Colors.lightBlue,fontWeight: FontWeight.bold))
                   ],
                 ),
 
@@ -57,7 +55,8 @@ class Login extends StatelessWidget{
                       color: Colors.white,
                       borderRadius: new BorderRadius.all(Radius.circular(20.0))
                 ),
-                child: Column(
+                child:
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -178,11 +177,13 @@ class Login extends StatelessWidget{
 
 
   Future<employee> log_me_in() async {
-    print(userNameCtr.text);
+    //print(userNameCtr.text);
    // return http.get('http://63.143.64.98:8090/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
     employee emp=employee();
     final response = await http.get('http://63.143.64.98:8090/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
     bool res=false;
+
+    print (response);
     if (response.statusCode == 200) {
       emp= employee.fromJson(jsonDecode(response.body));
       res=true;

@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter_hrm/sub_sups.dart';
-
+import 'department.dart';
+import 'department.dart';
 class employee
 {
   int recid;
@@ -34,19 +35,24 @@ class employee
   double pay_amount;
   String pay_effective;
   double pay_veh_allowance;
+  bool hr_team;
 
 
+  List<departments> depts=[];
   List<sub_sups>sups=[];
 
-  employee({this.pay_grade,this.pay_freq,this.pay_currency,this.pay_amount,this.pay_effective,this.pay_veh_allowance,this.sups,this.emp_status,this.job_category,this.mobile,this.hometel,this.eLocation,this.eCountry,this.address,this.city,this.country,this.dob,this.empno,this.fname,this.lname,this.recid,this.jobTitle,this.department,this.hireDate,this.nis,this.trn,this.marry_status,this.email});
+  employee({this.depts, this.hr_team,this.pay_grade,this.pay_freq,this.pay_currency,this.pay_amount,this.pay_effective,this.pay_veh_allowance,this.sups,this.emp_status,this.job_category,this.mobile,this.hometel,this.eLocation,this.eCountry,this.address,this.city,this.country,this.dob,this.empno,this.fname,this.lname,this.recid,this.jobTitle,this.department,this.hireDate,this.nis,this.trn,this.marry_status,this.email});
 
   factory employee.fromJson(Map<String, dynamic> json) {
 
     var tagObjsJson = json['mySupervisors'] as List;
     List<sub_sups> _tags = tagObjsJson.map((tagJson) => sub_sups.fromJson(tagJson)).toList();
 
-    return employee(
+    var tagObjsJson2 = json['my_departments'] as List;
+    List<departments> _depts = tagObjsJson2.map((tagJson) => departments.fromJson(tagJson)).toList();
 
+    return employee(
+      hr_team: json['hr_team'],
       pay_grade: json['salary']['pay_grade']['name'],
       pay_freq: json['salary']['freq'],
       pay_currency: json['salary']['currency'],
@@ -73,7 +79,8 @@ class employee
       hireDate: json['myJob']['joindate'],
       emp_status: json['myJob']['empStatus']['status'],
       job_category: json['myJob']['eCategory']['category'],
-      sups: _tags
+      sups: _tags,
+      depts: _depts
     );
   }
 

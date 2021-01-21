@@ -28,7 +28,10 @@ dependencies:
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
   pie_chart: ^4.0.1
-
+  advance_pdf_viewer: any
+  flutter_pdfview: ^1.0.4
+  flutter_cache_manager: ^2.1.1
+  image_picker: ^0.4.10
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
