@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 
 class new_notification extends StatefulWidget {
   employee meEmp;
@@ -42,6 +41,7 @@ class _new_notification extends State<new_notification>{
     //configLoading();
    //print (thisEmp.depts[0].name);
      departs=thisEmp.depts;
+     print('de');
   }
 
 
@@ -54,7 +54,10 @@ class _new_notification extends State<new_notification>{
   String errMessage = 'Error Uploading Image';
 
   chooseImage() {
+
     setState(() {
+      print('jello');
+      final _picker = ImagePicker();
       file = ImagePicker.pickImage(source: ImageSource.gallery);
     });
     setStatus('');
@@ -68,11 +71,8 @@ class _new_notification extends State<new_notification>{
             null != snapshot.data) {
           tmpFile = snapshot.data;
           base64Image = base64Encode(snapshot.data.readAsBytesSync());
-          return Flexible(
-            child: Image.file(
-              snapshot.data,
-              fit: BoxFit.fill,
-            ),
+          return Container(
+            child: Image.file(snapshot.data, fit: BoxFit.fill,height: 150,),
           );
         } else if (null != snapshot.error) {
           return const Text(
@@ -89,6 +89,9 @@ class _new_notification extends State<new_notification>{
     );
   }
 
+  File _image;
+
+  PickedFile imageFile;
 
   setStatus(String message) {
     setState(() {
@@ -127,7 +130,10 @@ class _new_notification extends State<new_notification>{
         backgroundColor: Colors.indigoAccent,
         title: Text('New Notification'),
       ),
-      body: Container(
+
+        body:
+
+      Container(
           width: double.infinity,
           color: HexColor("#F7F8FE"),  //Colors.blue[50],
           padding: EdgeInsets.all(30.0),
@@ -249,6 +255,8 @@ class _new_notification extends State<new_notification>{
           )
       ),
 
+
+
     );
   }
 
@@ -261,9 +269,10 @@ class _new_notification extends State<new_notification>{
     //print (sel_dates);
 
     var response = await http.post(
-        Uri.encodeFull("http://63.143.64.98:8090/api/request_leave/"),
+        Uri.encodeFull("http://63.143.64.98:8090/api/post_comment/"),
 
         body: {
+          "image": base64Image,
           'empid': widget.meEmp.recid.toString(),
           'comment': _notify_message.text,
           'receipient':selected_dept.ID.toString(),
@@ -271,13 +280,13 @@ class _new_notification extends State<new_notification>{
         }
 
     );
-
+    print (response.body);
     if (response.statusCode == 200) {
       res=true;
-      print (response.body);
+      //print (response.body);
       //print(response.body['myJob']['jTitle']['title']);
     } else {
-      print (response.body);
+     // print (response.body);
     }
     return res;
 
