@@ -70,6 +70,7 @@ class _new_notification extends State<new_notification>{
         if (snapshot.connectionState == ConnectionState.done &&
             null != snapshot.data) {
           tmpFile = snapshot.data;
+
           base64Image = base64Encode(snapshot.data.readAsBytesSync());
           return Container(
             child: Image.file(snapshot.data, fit: BoxFit.fill,height: 150,),
@@ -241,7 +242,7 @@ class _new_notification extends State<new_notification>{
                               ),
                             ));
                         //  submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
-                        bool res = await submit_request();
+                        bool res = await hii('','');
                         if (res == true) {
                           //Navigator.push(context, MaterialPageRoute(builder: (context)=> main_dash(thisEmp: res)));
                           Navigator.pop(context);
@@ -260,6 +261,23 @@ class _new_notification extends State<new_notification>{
     );
   }
 
+  hii(String filename, String url) async {
+    var request = http.MultipartRequest('POST', Uri.parse("http://63.143.64.98:8090/api/post_comment/"));
+    request.files.add(
+        await http.MultipartFile.fromPath(
+            'picture',
+            tmpFile.path
+        )
+    );
+    //var res = await request.send();
+    request.fields['empid'] = widget.meEmp.recid.toString();
+    request.fields['comment'] = _notify_message.text;
+    request.fields['receipient'] = selected_dept.ID.toString();
+    var response = await request.send();
+
+    return false;
+  }
+
   Future<bool> submit_request() async {
     bool res=false;
     String sel_dates='';
@@ -267,7 +285,24 @@ class _new_notification extends State<new_notification>{
     //print (widget.myEmp.recid.toString());
     //print (selected_leave_type.value.toString());
     //print (sel_dates);
+    print (tmpFile.readAsBytesSync());
 
+
+    var request = http.MultipartRequest('POST', Uri.parse("http://63.143.64.98:8090/api/post_comment/"));
+    request.files.add(
+        http.MultipartFile.fromBytes(
+            'picture',
+            tmpFile.readAsBytesSync(),
+           // filename: filename.split("/").last
+        )
+    );
+
+    request.fields['empid'] = widget.meEmp.recid.toString();
+    request.fields['comment'] = _notify_message.text;
+    request.fields['receipient'] = selected_dept.ID.toString();
+    var response = await request.send();
+
+    /*
     var response = await http.post(
         Uri.encodeFull("http://63.143.64.98:8090/api/post_comment/"),
 
@@ -280,7 +315,9 @@ class _new_notification extends State<new_notification>{
         }
 
     );
-    print (response.body);
+
+     */
+    print (response.reasonPhrase);
     if (response.statusCode == 200) {
       res=true;
       //print (response.body);
