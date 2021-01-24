@@ -265,7 +265,7 @@ class _new_notification extends State<new_notification>{
     var request = http.MultipartRequest('POST', Uri.parse("http://63.143.64.98:8090/api/post_comment/"));
     request.files.add(
         await http.MultipartFile.fromPath(
-            'picture',
+            'picture',//
             tmpFile.path
         )
     );
