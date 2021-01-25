@@ -65,9 +65,20 @@ class notifications_home extends  State<notifications_page>{
             Icons.add
         ),
         onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> new_notification(meEmp: widget.emp)));
+          Navigator.of(context).push(createRoute());
         },
       ),
+
+    );
+  }
+
+  Route createRoute()
+  {
+    return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation)=>new_notification(meEmp: widget.emp),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return child;
+      },
 
     );
   }

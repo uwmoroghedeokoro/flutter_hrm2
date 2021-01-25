@@ -100,27 +100,7 @@ class _new_notification extends State<new_notification>{
     });
   }
 
-  startUpload() {
-    setStatus('Uploading Image...');
-    if (null == tmpFile) {
-      setStatus(errMessage);
-      return;
-    }
 
-    String fileName = tmpFile.path.split('/').last;
-    upload(fileName);
-  }
-
-  upload(String fileName) {
-    http.post(uploadEndPoint, body: {
-      "image": base64Image,
-      "name": fileName,
-    }).then((result) {
-      setStatus(result.statusCode == 200 ? result.body : errMessage);
-    }).catchError((error) {
-      setStatus(error);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,10 +223,21 @@ class _new_notification extends State<new_notification>{
                             ));
                         //  submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
                         bool res = await hii('','');
+                        Navigator.pop(context);
+
                         if (res == true) {
                           //Navigator.push(context, MaterialPageRoute(builder: (context)=> main_dash(thisEmp: res)));
                           Navigator.pop(context);
-                        }
+                        }else
+                          _scaffoldKey.currentState.showSnackBar(
+                              new SnackBar( //duration: new Duration(seconds: 4),
+                                content:
+                                new Row(
+                                  children: <Widget>[
+                                   new Text("  An error occured. Please try again")
+                                  ],
+                                ),
+                              ));
                       }
                     },
 
@@ -262,6 +253,7 @@ class _new_notification extends State<new_notification>{
   }
 
   hii(String filename, String url) async {
+    bool res=false;
     var request = http.MultipartRequest('POST', Uri.parse("http://63.143.64.98:8090/api/post_comment/"));
     request.files.add(
         await http.MultipartFile.fromPath(
@@ -275,7 +267,15 @@ class _new_notification extends State<new_notification>{
     request.fields['receipient'] = selected_dept.ID.toString();
     var response = await request.send();
 
-    return false;
+    if (response.statusCode == 200) {
+      res=true;
+      //print (response.body);
+      //print(response.body['myJob']['jTitle']['title']);
+    } else {
+      // print (response.body);
+    }
+
+    return res;
   }
 
   Future<bool> submit_request() async {
