@@ -11,6 +11,7 @@ import 'package:flutter_hrm/employment_info_page.dart';
 import 'package:flutter_hrm/leave_tab.dart';
 import 'package:flutter_hrm/message_note.dart';
 import 'package:flutter_hrm/notifications_page.dart';
+import 'package:flutter_hrm/pageTransition.dart';
 import 'package:flutter_hrm/personal_info_page.dart';
 import 'package:flutter_hrm/salary_info_page.dart';
 import 'package:flutter_hrm/shift_page.dart';
@@ -245,10 +246,14 @@ Widget new_main()
                                ]
                            )
                        ),
-                       Card(
+                       GestureDetector(
+                         onTap: (){
+                           Navigator.of(context).push(pageTransition().createRoute(personal_info(myEmp: widget.myEmp)));
+                         },
+                      child: Card(
                          color:Colors.white,
-                          elevation: 2,
-                        shadowColor: Colors.grey[50],
+                          elevation: 6,
+                        shadowColor: Colors.white60,
                         child:
 
                         Container(
@@ -297,14 +302,15 @@ Widget new_main()
 
 
                        ),
+                       ),
 
 
                        SizedBox(height: 14,),
 
                     Card(
                         color:Colors.white,
-                        elevation: 2,
-                        shadowColor: Colors.grey[50],
+                        elevation: 6,
+                        shadowColor: Colors.white60,
                     child: Container(
                       //height:80,
                       padding:EdgeInsets.all(10),
@@ -352,8 +358,8 @@ Widget new_main()
                        SizedBox(height: 10,),
                        Card(
                            color:Colors.white,
-                           elevation: 2,
-                           shadowColor: Colors.grey[50],
+                           elevation: 6,
+                           shadowColor: Colors.white60,
                            child: Container(
                              //height:80,
                                padding:EdgeInsets.all(10),
@@ -428,8 +434,8 @@ Widget new_main()
                        SizedBox(height: 10,),
                        Card(
                            color:Colors.white,
-                           elevation: 2,
-                           shadowColor: Colors.grey[50],
+                           elevation: 6,
+                           shadowColor: Colors.white60,
                            child: Container(
                              //height:80,
                                padding:EdgeInsets.all(10),

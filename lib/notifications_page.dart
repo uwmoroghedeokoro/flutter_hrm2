@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hrm/employee.dart';
 import 'package:flutter_hrm/leave_status.dart';
 import 'package:flutter_hrm/new_notification.dart';
+import 'package:flutter_hrm/pageTransition.dart';
 import 'package:flutter_hrm/request_leave.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -65,23 +66,14 @@ class notifications_home extends  State<notifications_page>{
             Icons.add
         ),
         onPressed: (){
-          Navigator.of(context).push(createRoute());
+          Navigator.of(context).push(pageTransition().createRoute(new_notification(meEmp: widget.emp)));
         },
       ),
 
     );
   }
 
-  Route createRoute()
-  {
-    return PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation)=>new_notification(meEmp: widget.emp),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return child;
-      },
 
-    );
-  }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
    // List<String> values = snapshot.data;

@@ -1,38 +1,52 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_hrm/company_info.dart';
 import 'package:flutter_hrm/employee.dart';
 import 'package:flutter_hrm/main_dash.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class Login extends StatelessWidget{
+
+class Login extends StatefulWidget{
+
+
+  @override
+  _Login createState()=>_Login();
+}
+
+class _Login extends State<Login>{
 
   final userNameCtr=TextEditingController();
   final userPwdCtr=TextEditingController();
+  company_info companyIfo=company_info();
+
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-   return MaterialApp(
+   return
+     MaterialApp(
      home:Builder (
        builder: (context) =>
      Scaffold(
        key:_scaffoldKey,
-       body:Container(
-       // decoration: BoxDecoration(image: DecorationImage(image: AssetImage("images/bg1.jpg"), fit:BoxFit.fill),),
+       body:
+       Container(
          color: Colors.grey[50],
-        child: Container(
+         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 flex: 1,
-              child:Container(
+                child:Container(
                 padding: EdgeInsets.all(30.0),
                 alignment: Alignment.bottomCenter,
-
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -41,7 +55,9 @@ class Login extends StatelessWidget{
                        child:Image.asset("images/grp.png",height: 50,width: 50)
                    ),
                    Text('Login to', style: TextStyle(fontSize: 20.0,color: Colors.lightBlue)),
-                   Text('Mango HR',style:TextStyle(fontSize: 35.0,color: Colors.lightBlue,fontWeight: FontWeight.bold))
+                   Text('Mango HR',style:TextStyle(fontSize: 30.0,color: Colors.lightBlue,fontWeight: FontWeight.bold)),
+                    SizedBox(height: 30),
+                    Text(companyIfo.company_name==null?'-':companyIfo.company_name,style:TextStyle(fontSize: 18.0,color: Colors.black,fontWeight: FontWeight.bold))
                   ],
                 ),
 
@@ -175,12 +191,34 @@ class Login extends StatelessWidget{
    );
   }
 
+  @override
+  void initState(){
+
+    companyIfo.company_name='-';
+
+    setState(() {
+      //companyIfo.company_name='NOT BLANK';
+     getStringValuesSF();
+    });
+  }
+
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+       companyIfo.company_name=prefs.getString('company_name');
+       companyIfo.api_domain=prefs.getString('api_domain');
+       companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    print('de - ' + prefs.getString('company_name'));
+
+    return companyIfo;
+  }
 
   Future<employee> log_me_in() async {
-    //print(userNameCtr.text);
-   // return http.get('http://63.143.64.98:8090/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
     employee emp=employee();
-    final response = await http.get('http://63.143.64.98:8090/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
+    final response = await http.get(companyIfo.api_endpoint + ':8090/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
     bool res=false;
 
     print (response);

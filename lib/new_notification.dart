@@ -20,7 +20,6 @@ class new_notification extends StatefulWidget {
   new_notification({this.meEmp});
 
   @override
-
     _new_notification createState() => new _new_notification(thisEmp: meEmp);
 
 }
@@ -116,7 +115,7 @@ class _new_notification extends State<new_notification>{
 
       Container(
           width: double.infinity,
-          color: HexColor("#F7F8FE"),  //Colors.blue[50],
+          color: Colors.grey[50],  //Colors.blue[50],
           padding: EdgeInsets.all(30.0),
           child: Column(
             // runSpacing: 18,
@@ -221,9 +220,9 @@ class _new_notification extends State<new_notification>{
                                 ],
                               ),
                             ));
-                        //  submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
+                        // submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
                         bool res = await hii('','');
-                        Navigator.pop(context);
+                       // Navigator.pop(context);
 
                         if (res == true) {
                           //Navigator.push(context, MaterialPageRoute(builder: (context)=> main_dash(thisEmp: res)));
@@ -234,7 +233,7 @@ class _new_notification extends State<new_notification>{
                                 content:
                                 new Row(
                                   children: <Widget>[
-                                   new Text("  An error occured. Please try again")
+                                   new Text("An error occured. Please try again")
                                   ],
                                 ),
                               ));
