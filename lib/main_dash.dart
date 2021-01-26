@@ -73,6 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return companyIfo;
   }
 
+  int _selectedTab=1;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -91,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _getBarItemWidget(_selectedDrawerIndex) ,
                   drawer: Drawer(),
                   bottomNavigationBar: FancyBottomNavigation(
+                    initialSelection: _selectedTab,
                     tabs: [
                       TabData(iconData: Icons.account_circle, title: "Profile"),
                       TabData(iconData: Icons.airplanemode_active_rounded,
@@ -205,6 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return a_trail;
   }
   _getData() async {
+    print(companyIfo.api_endpoint + "/api/entitlement/"+ widget.myEmp.recid.toString());
     var response = await http.get(
         Uri.encodeFull(companyIfo.api_endpoint + "/api/entitlement/"+ widget.myEmp.recid.toString()),
         headers: {
@@ -259,7 +263,7 @@ Widget new_main()
                                crossAxisAlignment: CrossAxisAlignment.start,
                                children:[
                                  Text(companyIfo.company_name, style:TextStyle(color:Colors.black54,fontSize: 15)),
-                                 Text('Overview', style:TextStyle(color:Colors.black54,fontSize: 35,fontWeight:FontWeight.bold)),
+                                 Text('Overview', style:TextStyle(color:Colors.blueGrey,fontSize: 35,fontWeight:FontWeight.bold)),
                                  SizedBox(height:26)
                                ]
                            )
@@ -285,7 +289,7 @@ Widget new_main()
                                        top: 0.0, bottom: 0.0),
                                    width: 70, height: 70,
                                    decoration: BoxDecoration(
-                                       shape: BoxShape.circle,color:Colors.indigoAccent,border:Border.all(width: 4,color: Colors.blue,),
+                                       shape: BoxShape.circle,color:Colors.white,border:Border.all(width: 4,color: Colors.blue[300],),
                                        image: DecorationImage(
                                            fit: BoxFit.fill,
                                          image: new AssetImage('images/defpic.png'),
@@ -324,8 +328,14 @@ Widget new_main()
 
 
                        SizedBox(height: 14,),
-
-                    Card(
+                   GestureDetector(
+                     onTap: (){
+                       setState(() {
+                         _selectedTab=1;
+                         _getBarItemWidget(1);
+                       });
+                     },
+                   child: Card(
                         color:Colors.white,
                         elevation: 6,
                         shadowColor: Colors.white60,
@@ -373,6 +383,7 @@ Widget new_main()
                       )
                     )
                   ),
+                   ),
                        SizedBox(height: 10,),
                        Card(
                            color:Colors.white,

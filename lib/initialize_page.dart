@@ -24,6 +24,12 @@ class _initialize_page extends State<initialize_page>
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
+  void initState(){
+   // final api_domain=await _getSharedPref();
+   // _getSharedPref();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return(
       MaterialApp(
@@ -161,28 +167,33 @@ class _initialize_page extends State<initialize_page>
     );
   }
 
+   _getSharedPref() async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     String api_domain=prefs.getString('api_domain');
 
+     if (api_domain != null || api_domain!="")
+       {
+         Navigator.pushReplacement(
+           context,
+           MaterialPageRoute(builder: (context) => new Login()),
+         );
+       }
+
+    }
 
   _getCompanyInfo() async {
     bool res=false;
-
     var response = await http.post(
-        Uri.encodeFull("http://63.143.64.98:8090/api/initialize/"),
-
+        Uri.encodeFull("https://hrm.islandroutes.com:8090/api/initialize/"),
         body: {
           "api_domain": userNameCtr.text,
-
-        }
-
-    );
-   // print ('1.');
+        });
     var result=jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200)
+    {
       res=true;
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      //print(result['company_name']);
       prefs.setString('company_name', result['company_name']);
       prefs.setString('api_endpoint', result['api_endpoint']);
       prefs.setString('api_domain', result['api_domain']);

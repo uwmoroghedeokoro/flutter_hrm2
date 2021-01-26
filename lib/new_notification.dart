@@ -43,11 +43,18 @@ class _new_notification extends State<new_notification>{
     //configLoading();
    //print (thisEmp.depts[0].name);
      departs=thisEmp.depts;
-     print('de');
+     anotherfunc();
+  }
+
+  anotherfunc() async
+  {
+    final awa=await getStringValuesSF();
+    print ("fin");
+
   }
 
   company_info companyIfo=company_info();
-  getStringValuesSF() async {
+  Future<String> getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
@@ -56,11 +63,8 @@ class _new_notification extends State<new_notification>{
       companyIfo.api_endpoint=prefs.getString('api_endpoint');
     });
 
-    print('de - ' + prefs.getString('company_name'));
-
-    return companyIfo;
+    return "done";
   }
-
   static final String uploadEndPoint =
       'http://localhost/flutter_test/upload_image.php';
   Future<File> file;
@@ -227,33 +231,47 @@ class _new_notification extends State<new_notification>{
                     color: Colors.indigoAccent,
                     onPressed: () async {
                       {
-                        _scaffoldKey.currentState.showSnackBar(
-                            new SnackBar( //duration: new Duration(seconds: 4),
-                              content:
-                              new Row(
-                                children: <Widget>[
-                                  new CircularProgressIndicator(),
-                                  new Text("  Sending Notification")
-                                ],
-                              ),
-                            ));
-                        // submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
-                        bool res = await hii('','');
-                       // Navigator.pop(context);
-
-                        if (res == true) {
-                          //Navigator.push(context, MaterialPageRoute(builder: (context)=> main_dash(thisEmp: res)));
-                          Navigator.pop(context);
-                        }else
+                        if (selected_dept != null) {
                           _scaffoldKey.currentState.showSnackBar(
                               new SnackBar( //duration: new Duration(seconds: 4),
                                 content:
                                 new Row(
                                   children: <Widget>[
-                                   new Text("An error occured. Please try again")
+                                    new CircularProgressIndicator(),
+                                    new Text("  Sending Notification")
                                   ],
                                 ),
                               ));
+                          // submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
+                          bool res = await hii('', '');
+                          // Navigator.pop(context);
+
+                          if (res == true) {
+                            //Navigator.push(context, MaterialPageRoute(builder: (context)=> main_dash(thisEmp: res)));
+                            Navigator.pop(context);
+                          } else
+                            _scaffoldKey.currentState.showSnackBar(
+                                new SnackBar( //duration: new Duration(seconds: 4),
+                                  content:
+                                  new Row(
+                                    children: <Widget>[
+                                      new Text(
+                                          "An error occured. Please try again")
+                                    ],
+                                  ),
+                                ));
+                        }else {
+                          _scaffoldKey.currentState.showSnackBar(
+                              new SnackBar( //duration: new Duration(seconds: 4),
+                                content:
+                                new Row(
+                                  children: <Widget>[
+                                    new Text(
+                                        " Please seelct a recipient group")
+                                  ],
+                                ),
+                              ));
+                        }
                       }
                     },
 
@@ -270,13 +288,15 @@ class _new_notification extends State<new_notification>{
 
   hii(String filename, String url) async {
     bool res=false;
-    var request = http.MultipartRequest('POST', Uri.parse("http://63.143.64.98:8090/api/post_comment/"));
-    request.files.add(
-        await http.MultipartFile.fromPath(
-            'picture',//
-            tmpFile.path
-        )
-    );
+    var request = http.MultipartRequest('POST', Uri.parse(companyIfo.api_endpoint+"/api/post_comment/"));
+    if (tmpFile != null) {
+      request.files.add(
+          await http.MultipartFile.fromPath(
+              'picture', //
+              tmpFile.path
+          )
+      );
+    }
     //var res = await request.send();
     request.fields['empid'] = widget.meEmp.recid.toString();
     request.fields['comment'] = _notify_message.text;
@@ -295,24 +315,27 @@ class _new_notification extends State<new_notification>{
   }
 
   Future<bool> submit_request() async {
-    bool res=false;
-    String sel_dates='';
+    bool res = false;
+    String sel_dates = '';
 
     //print (widget.myEmp.recid.toString());
     //print (selected_leave_type.value.toString());
     //print (sel_dates);
-    print (tmpFile.readAsBytesSync());
+    print(tmpFile.readAsBytesSync());
 
 
-    var request = http.MultipartRequest('POST', Uri.parse(companyIfo.api_endpoint+"/api/post_comment/"));
-    request.files.add(
-        http.MultipartFile.fromBytes(
+    var request = http.MultipartRequest(
+        'POST', Uri.parse(companyIfo.api_endpoint + "/api/post_comment/"));
+    if (tmpFile != null)
+      {
+      request.files.add(
+          http.MultipartFile.fromBytes(
             'picture',
             tmpFile.readAsBytesSync(),
-           // filename: filename.split("/").last
-        )
-    );
-
+            // filename: filename.split("/").last
+          )
+      );
+     }
     request.fields['empid'] = widget.meEmp.recid.toString();
     request.fields['comment'] = _notify_message.text;
     request.fields['receipient'] = selected_dept.ID.toString();
