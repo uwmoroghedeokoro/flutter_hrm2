@@ -6,9 +6,11 @@ import 'package:flutter_hrm/employee.dart';
 import 'package:flutter_hrm/shifts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'HexColor.dart';
+import 'company_info.dart';
 class shift_page extends StatefulWidget{
 
   employee myEmp;
@@ -297,7 +299,7 @@ class _my_shift_page extends State<shift_page> with TickerProviderStateMixin{
 
   Future<String> getData() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/shifts/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint+ "/api/shifts/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -329,7 +331,7 @@ class _my_shift_page extends State<shift_page> with TickerProviderStateMixin{
   }
   Future<String> getTeamData() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/team_shifts/" + DateFormat('MM-dd-yyyy').format(selectedDate) + "/" + widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint+ "/api/team_shifts/" + DateFormat('MM-dd-yyyy').format(selectedDate) + "/" + widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -364,7 +366,31 @@ class _my_shift_page extends State<shift_page> with TickerProviderStateMixin{
   @override
   void initState(){
     _tabController = TabController(length: 2,vsync: this);
-     this.getData();
+    anotherfunc();
+  }
+
+  anotherfunc() async
+  {
+    final awa=await getStringValuesSF();
+    print ("fin");
+    this.getData();
+
+    team_shifts=[];
+    selectedDate = DateTime.now();
+    getTeamData();
+  }
+
+  company_info companyIfo=company_info();
+  Future<String> getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      companyIfo.company_name=prefs.getString('company_name');
+      companyIfo.api_domain=prefs.getString('api_domain');
+      companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    return "done";
   }
 
 }

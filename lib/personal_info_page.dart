@@ -4,8 +4,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hrm/employee.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'HexColor.dart';
+import 'company_info.dart';
 
 class personal_info extends StatefulWidget{
   employee myEmp;
@@ -200,6 +202,21 @@ class personal_info_page extends State<personal_info> {
             duration: Duration(milliseconds: 200));
       });
     }
+  }
+
+  company_info companyIfo=company_info();
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      companyIfo.company_name=prefs.getString('company_name');
+      companyIfo.api_domain=prefs.getString('api_domain');
+      companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    print('de - ' + prefs.getString('company_name'));
+
+    return companyIfo;
   }
 
 }

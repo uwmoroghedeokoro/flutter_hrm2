@@ -18,7 +18,9 @@ import 'package:flutter_hrm/shift_page.dart';
 import 'package:flutter_hrm/shifts.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'HexColor.dart';
+import 'company_info.dart';
 import 'leave_entitlement.dart';
 import 'package:intl/intl.dart';
 
@@ -53,6 +55,22 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
    // getData();
     super.initState();
+    getStringValuesSF();
+  }
+
+  company_info companyIfo=company_info();
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      companyIfo.company_name=prefs.getString('company_name');
+      companyIfo.api_domain=prefs.getString('api_domain');
+      companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    print('de - ' + prefs.getString('company_name'));
+
+    return companyIfo;
   }
 
   @override
@@ -78,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       TabData(iconData: Icons.airplanemode_active_rounded,
                           title: "Leaves"),
                       TabData(iconData: Icons.calendar_today, title: "Shifts"),
-                      TabData(iconData: Icons.article_rounded, title: "Notifications")
+                      TabData(iconData: Icons.stars_sharp, title: "Updates")
                     ],
                     onTabChangedListener: (position) {
                       setState(() {
@@ -120,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<shifts> _getShifts() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/shifts/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/shifts/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -151,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   Future<message_note> _getTrails() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/get_trail/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/get_trail/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -188,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   _getData() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/entitlement/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/entitlement/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -240,8 +258,8 @@ Widget new_main()
                            child: Column(
                                crossAxisAlignment: CrossAxisAlignment.start,
                                children:[
-                                 Text('Company Name', style:TextStyle(color:Colors.black54,fontSize: 15)),
-                                 Text('Summary', style:TextStyle(color:Colors.black87,fontSize: 35,fontWeight:FontWeight.bold)),
+                                 Text(companyIfo.company_name, style:TextStyle(color:Colors.black54,fontSize: 15)),
+                                 Text('Overview', style:TextStyle(color:Colors.black54,fontSize: 35,fontWeight:FontWeight.bold)),
                                  SizedBox(height:26)
                                ]
                            )
@@ -537,7 +555,7 @@ Widget new_main()
                                                         border:  Border.all(color:Colors.black12)
                                                     ),
                                                     child:
-                                                    Image.network('http://63.143.64.98:8070/sharePhotos/' + this_trail.postedDoc)
+                                                    Image.network('http://' +companyIfo.api_domain+ ':8070/sharePhotos/' + this_trail.postedDoc)
                                                 )
                                      ]
                                      )

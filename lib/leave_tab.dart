@@ -5,9 +5,11 @@ import 'package:flutter_hrm/employee.dart';
 import 'package:flutter_hrm/leave_status.dart';
 import 'package:flutter_hrm/request_leave.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'HexColor.dart';
+import 'company_info.dart';
 import 'leave_entitlement.dart';
 
 
@@ -32,12 +34,12 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
 
   Future<String> getData() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/entitlement/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/entitlement/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
     );
-
+//print(companyIfo.api_endpoint + "/api/entitlement/"+ widget.myEmp.recid.toString());
     this.setState(() {
 
       if (response.statusCode == 200) {
@@ -65,7 +67,7 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
 
   Future<String> getData_Status() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/leave_status/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint+"/api/leave_status/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -98,7 +100,7 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
 
   Future<String> getData_Team() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/team_status/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/team_status/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -132,11 +134,35 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
 
   @override
   void initState(){
+
     _tabController = TabController(length: 3,vsync: this);
     _tabController.addListener(_handleTabSelection);
-    this.getData();
-    this.getData_Status();
+
+    anotherfunc();
+
   }
+
+  anotherfunc() async
+  {
+    final awa=await getStringValuesSF();
+    print ("fin");
+      this.getData();
+     this.getData_Status();
+  }
+
+  company_info companyIfo=company_info();
+  Future<String> getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      companyIfo.company_name=prefs.getString('company_name');
+      companyIfo.api_domain=prefs.getString('api_domain');
+      companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    return "done";
+  }
+
 
   _handleTabSelection() {
     setState(() {
@@ -426,7 +452,7 @@ class _leave_balance extends State<LeaveTab> with TickerProviderStateMixin{
     String sel_dates='';
 print(leave_req.req_id);
     var response = await http.post(
-        Uri.encodeFull("http://63.143.64.98:8090/api/request_response/"),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/request_response/"),
 
         body: {
           'empid': leave_req.emp_id.toString(),

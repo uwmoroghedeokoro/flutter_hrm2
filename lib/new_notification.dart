@@ -7,12 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hrm/department.dart';
 import 'package:flutter_hrm/employee.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'HexColor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+
+import 'company_info.dart';
 
 class new_notification extends StatefulWidget {
   employee meEmp;
@@ -43,6 +46,20 @@ class _new_notification extends State<new_notification>{
      print('de');
   }
 
+  company_info companyIfo=company_info();
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      companyIfo.company_name=prefs.getString('company_name');
+      companyIfo.api_domain=prefs.getString('api_domain');
+      companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    print('de - ' + prefs.getString('company_name'));
+
+    return companyIfo;
+  }
 
   static final String uploadEndPoint =
       'http://localhost/flutter_test/upload_image.php';
@@ -287,7 +304,7 @@ class _new_notification extends State<new_notification>{
     print (tmpFile.readAsBytesSync());
 
 
-    var request = http.MultipartRequest('POST', Uri.parse("http://63.143.64.98:8090/api/post_comment/"));
+    var request = http.MultipartRequest('POST', Uri.parse(companyIfo.api_endpoint+"/api/post_comment/"));
     request.files.add(
         http.MultipartFile.fromBytes(
             'picture',

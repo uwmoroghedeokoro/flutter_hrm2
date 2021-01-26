@@ -21,7 +21,7 @@ class _Login extends State<Login>{
 
   final userNameCtr=TextEditingController();
   final userPwdCtr=TextEditingController();
-  company_info companyIfo=company_info();
+
 
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -202,6 +202,7 @@ class _Login extends State<Login>{
     });
   }
 
+  company_info companyIfo=company_info();
   getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -218,7 +219,7 @@ class _Login extends State<Login>{
 
   Future<employee> log_me_in() async {
     employee emp=employee();
-    final response = await http.get(companyIfo.api_endpoint + ':8090/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
+    final response = await http.get(companyIfo.api_endpoint + '/api/login/' + userNameCtr.text + '/'+ userPwdCtr.text);
     bool res=false;
 
     print (response);

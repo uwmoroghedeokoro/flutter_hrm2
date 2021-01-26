@@ -7,7 +7,9 @@ import 'package:flutter_hrm/new_notification.dart';
 import 'package:flutter_hrm/pageTransition.dart';
 import 'package:flutter_hrm/request_leave.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'company_info.dart';
 import 'message_note.dart';
 import 'HexColor.dart';
 import 'leave_entitlement.dart';
@@ -27,6 +29,8 @@ class notifications_page extends StatefulWidget{
 
 
 }
+
+
 
 class notifications_home extends  State<notifications_page>{
   @override
@@ -73,7 +77,31 @@ class notifications_home extends  State<notifications_page>{
     );
   }
 
+  company_info companyIfo=company_info();
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    setState(() {
+      companyIfo.company_name=prefs.getString('company_name');
+      companyIfo.api_domain=prefs.getString('api_domain');
+      companyIfo.api_endpoint=prefs.getString('api_endpoint');
+    });
+
+    print('de - ' + prefs.getString('company_name'));
+
+    return companyIfo;
+  }
+
+  @override
+  void initState(){
+
+    companyIfo.company_name='-';
+
+    setState(() {
+      //companyIfo.company_name='NOT BLANK';
+      getStringValuesSF();
+    });
+  }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
    // List<String> values = snapshot.data;
@@ -176,7 +204,7 @@ class notifications_home extends  State<notifications_page>{
 
   Future<List<message_note>> _getTrails() async {
     var response = await http.get(
-        Uri.encodeFull("http://63.143.64.98:8090/api/get_trail/"+ widget.emp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint+ "/api/get_trail/"+ widget.emp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
