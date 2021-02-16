@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -25,7 +26,7 @@ import 'leave_entitlement.dart';
 import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title,this.myEmp}) : super(key: key);
+  MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
   employee myEmp;
 
@@ -51,29 +52,106 @@ class _MyHomePageState extends State<MyHomePage> {
     Colors.indigoAccent
   ];
 
+  String messageTitle = "Empty";
+  String notificationAlert = "alert";
+  String device_id="-";
+  int thisEmp_id;
+
   @override
   void initState() {
    // getData();
     super.initState();
     getStringValuesSF();
+
+
+
+    _firebaseMessaging.configure(
+      onMessage: (message) async{
+        setState(() { //ll
+          messageTitle = message["notification"]["title"];
+          notificationAlert = "New Notification Alert";
+          print (messageTitle);
+        });
+
+      },
+      onResume: (message) async{
+        setState(() {//
+          messageTitle = message["data"]["title"];
+          notificationAlert = "Application opened from Notification";
+        });
+
+      },
+    );
+
+   // firebaseCloudMessaging_Listeners();
+  }
+
+  void firebaseCloudMessaging_Listeners() {
+   // if (Platform.isIOS) iOS_Permission();
+
+    _firebaseMessaging.getToken().then((token){
+      device_id=token;
+     // print('device: ' + device_id);
+      _register_device();
+    });
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('on message $message');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('on resume $message');
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('on launch $message');
+      },
+    );
+  }
+
+  void iOS_Permission() {
+    _firebaseMessaging.requestNotificationPermissions(
+        IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings)
+    {
+      print("Settings registered: $settings");
+    });
+  }
+
+  void fcmSubscribe() {
+    _firebaseMessaging.subscribeToTopic(companyIfo.api_domain + '-all_employee--');
+    _firebaseMessaging.subscribeToTopic(companyIfo.api_domain + '-dept-' + widget.myEmp.deptid.toString() + '--');
+   print (companyIfo.api_domain + '-dept-' + widget.myEmp.deptid.toString() + '--');
   }
 
   company_info companyIfo=company_info();
+
   getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
 
     setState(() {
       companyIfo.company_name=prefs.getString('company_name');
       companyIfo.api_domain=prefs.getString('api_domain');
       companyIfo.api_endpoint=prefs.getString('api_endpoint');
+     // print ('hello');
+      thisEmp_id=prefs.getInt("empid")?? -1;
+//print ('again');
+
+     // thisEmp = employee.fromJson(json.decode(prefs.getString("empMap")));
+     // print ('emp name: ' + thisEmp.fname);
     });
 
-    print('de - ' + prefs.getString('company_name'));
+    //print ('empno ' + widget.myEmp.recid.toString());
+
 
     return companyIfo;
   }
 
-  int _selectedTab=1;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  int _selectedTab=0;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +168,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   */
 
                   body:
-                  _getBarItemWidget(_selectedDrawerIndex) ,
+                      FutureBuilder<employee>(
+                        future: _get_emp(),
+                        builder: (BuildContext context, AsyncSnapshot<employee> snapshot) {
+                             if(snapshot.connectionState == ConnectionState.done)
+                                return _getBarItemWidget(_selectedDrawerIndex);
+                             else
+                               return Center(child: CircularProgressIndicator());
+                        },
+                        // _getBarItemWidget(_selectedDrawerIndex) ,
+                      )
+                 ,
+
                   drawer: Drawer(),
                   bottomNavigationBar: FancyBottomNavigation(
                     initialSelection: _selectedTab,
@@ -99,10 +188,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       TabData(iconData: Icons.airplanemode_active_rounded,
                           title: "Leaves"),
                       TabData(iconData: Icons.calendar_today, title: "Shifts"),
-                      TabData(iconData: Icons.stars_sharp, title: "Updates")
+                      TabData(iconData: Icons.stars_sharp, title: "Feed")
                     ],
                     onTabChangedListener: (position) {
                       setState(() {
+
                         _getBarItemWidget(position);
                       });
 
@@ -172,7 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   Future<message_note> _getTrails() async {
     var response = await http.get(
-        Uri.encodeFull(companyIfo.api_endpoint + "/api/get_trail/"+ widget.myEmp.recid.toString()),
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/get_last_trail/"+ widget.myEmp.recid.toString()),
         headers: {
           "Accept": "application/json"
         }
@@ -242,6 +332,67 @@ class _MyHomePageState extends State<MyHomePage> {
     return data;
   }
 
+Future<employee> _get_emp() async {
+    employee emp=employee();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    thisEmp_id=prefs.getInt("empid")?? -1;
+
+    final response = await http.get(companyIfo.api_endpoint + '/api/get_emp/' + thisEmp_id.toString());
+    bool res=false;
+    //print ('get emp');
+    if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+     emp= employee.fromJson(jsonDecode(response.body));
+      //prefs.setInt('empid', emp.recid);
+
+      //  Map<String,dynamic> empMap = employee().toMap();
+      //  await prefs.setString('empMap', json.encode(empMap));
+
+      res=true;
+      //print (response.body);
+      //print(response.body['myJob']['jTitle']['title']);
+    } else {
+      emp.recid=-1;
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+
+      //throw Exception('Failed to load album');
+    }
+    widget.myEmp=emp;
+    firebaseCloudMessaging_Listeners();
+    fcmSubscribe();
+    print ('all done');
+
+    return (emp);
+    // return res;
+  }
+
+  _register_device() async {
+   // print(companyIfo.api_endpoint + "/api/register_device/" + device_id + "/"+ widget.myEmp.recid.toString());
+    var response = await http.post(
+
+        Uri.encodeFull(companyIfo.api_endpoint + "/api/register_device/"),
+
+        body: {
+          'empid': widget.myEmp.recid.toString(),
+          'device_id': device_id
+        }
+
+    );
+
+    // this.setState(() {
+
+    if (response.statusCode == 200) {
+     // final dataz = jsonDecode(response.body);
+      print("fin register" + response.body);
+    }
+    // });
+
+    //print(data[1]["title"]);
+
+    return data;
+  }
+
 Widget new_main()
 {
   return (
@@ -263,8 +414,9 @@ Widget new_main()
                                crossAxisAlignment: CrossAxisAlignment.start,
                                children:[
                                  Text(companyIfo.company_name, style:TextStyle(color:Colors.black54,fontSize: 15)),
-                                 Text('Overview', style:TextStyle(color:Colors.blueGrey,fontSize: 35,fontWeight:FontWeight.bold)),
-                                 SizedBox(height:26)
+                                 Text('Overview', style:TextStyle(color:Colors.black87,fontSize: 35,fontWeight:FontWeight.bold)),
+                                 SizedBox(height:26),
+                                // Text('= ' + messageTitle)
                                ]
                            )
                        ),
@@ -289,7 +441,7 @@ Widget new_main()
                                        top: 0.0, bottom: 0.0),
                                    width: 70, height: 70,
                                    decoration: BoxDecoration(
-                                       shape: BoxShape.circle,color:Colors.white,border:Border.all(width: 4,color: Colors.blue[300],),
+                                       shape: BoxShape.circle,color:Colors.white,border:Border.all(width: 4,color: Colors.orangeAccent,),
                                        image: DecorationImage(
                                            fit: BoxFit.fill,
                                          image: new AssetImage('images/defpic.png'),
@@ -819,15 +971,15 @@ Widget new_main()
 
 
 class main_dash extends StatelessWidget {
-  employee thisEmp;
 
-  main_dash({this.thisEmp});
+
+  main_dash();
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
-      home:MyHomePage(title:'e',myEmp: thisEmp,)
+      home:MyHomePage(title:'e')
     );
   }
 

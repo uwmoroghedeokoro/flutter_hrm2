@@ -18,7 +18,7 @@ class initialize_page extends StatefulWidget {
 class _initialize_page extends State<initialize_page>
 {
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  // Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final userNameCtr=TextEditingController();
   final userPwdCtr=TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -132,7 +132,7 @@ class _initialize_page extends State<initialize_page>
                                                  // var res='';
                                                   //print (res);
                                                   if (res==true){
-                                                    Navigator.push(context, pageTransition().createRoute(Login()));
+                                                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> Login()), (Route<dynamic> route) => false);
 
                                                   }else
                                                   {
@@ -166,20 +166,6 @@ class _initialize_page extends State<initialize_page>
       )
     );
   }
-
-   _getSharedPref() async {
-     SharedPreferences prefs = await SharedPreferences.getInstance();
-     String api_domain=prefs.getString('api_domain');
-
-     if (api_domain != null || api_domain!="")
-       {
-         Navigator.pushReplacement(
-           context,
-           MaterialPageRoute(builder: (context) => new Login()),
-         );
-       }
-
-    }
 
   _getCompanyInfo() async {
     bool res=false;

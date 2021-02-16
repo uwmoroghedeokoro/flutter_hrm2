@@ -4,10 +4,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hrm/employee.dart';
+import 'package:flutter_hrm/pageTransition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'HexColor.dart';
 import 'company_info.dart';
+import 'login.dart';
 
 class personal_info extends StatefulWidget{
   employee myEmp;
@@ -26,6 +28,8 @@ class personal_info_page extends State<personal_info> {
   final GlobalKey expansionTileKey2 = GlobalKey();
 
   ScrollController _controller = new ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -33,6 +37,7 @@ class personal_info_page extends State<personal_info> {
     AnimatedOpacity(opacity:1.0 , duration: Duration(milliseconds: 1000),
      child:
         Scaffold(
+          key:_scaffoldKey,
           appBar: AppBar(title: Text('My Information')),
         body: Container(
         width: double.infinity,
@@ -177,7 +182,25 @@ class personal_info_page extends State<personal_info> {
                           ],
 
                         ),
+                        ListTile(
+                          leading: Icon(Icons.logout,color:Colors.redAccent),
+                          title: Text('Logout',style:TextStyle(fontWeight: FontWeight.bold)),
+                          onTap: () async{
+                            _scaffoldKey.currentState.showSnackBar(
+                                new SnackBar(duration: new Duration(seconds: 6),
+                                  content:
+                                  new Row(
+                                    children: <Widget>[
+                                      new CircularProgressIndicator(),
+                                      new Text("  Logging you out....")
+                                    ],
+                                  ),
+                                ));
+                            _logOut();
 
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> Login()), (Route<dynamic> route) => false);
+                          },
+                        )
                       ],
                     ).toList(),
                   )
@@ -192,6 +215,16 @@ class personal_info_page extends State<personal_info> {
     )
     );
 
+  }
+
+  void _logOut() async
+  {
+    SharedPreferences prefs=await SharedPreferences.getInstance();
+    prefs.remove("empid");
+   // prefs.remove("api_domain");
+    //prefs.remove("company_name");
+
+  //  pageTransition().createRoute(Login);
   }
 
   void _scrollToSelectedContent({GlobalKey expansionTileKey}) {

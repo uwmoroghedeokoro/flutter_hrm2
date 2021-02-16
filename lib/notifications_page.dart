@@ -32,7 +32,7 @@ class notifications_page extends StatefulWidget{
 
 
 
-class notifications_home extends  State<notifications_page>{
+class notifications_home extends  State<notifications_page> with WidgetsBindingObserver{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -40,7 +40,7 @@ class notifications_home extends  State<notifications_page>{
       appBar: AppBar(
          backgroundColor: Colors.blue,
         title: Text(
-          'Notifications'
+          'The Feed'
         ),
 
       ),
@@ -70,7 +70,19 @@ class notifications_home extends  State<notifications_page>{
             Icons.add
         ),
         onPressed: (){
-          Navigator.of(context).push(pageTransition().createRoute(new_notification(meEmp: widget.emp)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => new_notification(meEmp: widget.emp),
+            ),
+          ).then((value) {
+            setState((){
+              _getTrails();
+            });
+
+
+          });
+          //Navigator.of(context).push(pageTransition().createRoute(new_notification(meEmp: widget.emp)));
         },
       ),
 
@@ -78,6 +90,7 @@ class notifications_home extends  State<notifications_page>{
   }
 
   company_info companyIfo=company_info();
+
   getStringValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -96,11 +109,30 @@ class notifications_home extends  State<notifications_page>{
   void initState(){
 
     companyIfo.company_name='-';
-
+    WidgetsBinding.instance.addObserver(this);
     setState(() {
       //companyIfo.company_name='NOT BLANK';
       getStringValuesSF();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('llop');
+    if (state == AppLifecycleState.resumed) {
+      //do your stuff
+
+      setState((){
+        _getTrails();
+      });
+    }
   }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot) {

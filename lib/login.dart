@@ -157,7 +157,7 @@ class _Login extends State<Login>{
                           employee res=await log_me_in();
                           //print (res);
                          if (res.recid>0){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=> main_dash(thisEmp: res)));
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> main_dash()), (Route<dynamic> route) => false);
 
                           }else
                             {
@@ -177,6 +177,11 @@ class _Login extends State<Login>{
                       )
                       )
                     ),
+                    GestureDetector(
+                      child: Container(
+                        child: Text('Forgot password',style:TextStyle(fontSize:13,color:Colors.blue,fontWeight:FontWeight.bold))
+                      )
+                    )
                   ],
                 ),
               ))
@@ -224,7 +229,13 @@ class _Login extends State<Login>{
 
     print (response);
     if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       emp= employee.fromJson(jsonDecode(response.body));
+      prefs.setInt('empid', emp.recid);
+
+    //  Map<String,dynamic> empMap = employee().toMap();
+    //  await prefs.setString('empMap', json.encode(empMap));
+
       res=true;
       print (response.body);
       //print(response.body['myJob']['jTitle']['title']);

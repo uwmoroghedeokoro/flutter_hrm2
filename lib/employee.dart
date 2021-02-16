@@ -12,6 +12,7 @@ class employee
   String lname;
   String jobTitle;
   String department;
+  int deptid;
   String hireDate;
   String nis;
   String trn;
@@ -41,7 +42,7 @@ class employee
   List<departments> depts=[];
   List<sub_sups>sups=[];
 
-  employee({this.depts, this.hr_team,this.pay_grade,this.pay_freq,this.pay_currency,this.pay_amount,this.pay_effective,this.pay_veh_allowance,this.sups,this.emp_status,this.job_category,this.mobile,this.hometel,this.eLocation,this.eCountry,this.address,this.city,this.country,this.dob,this.empno,this.fname,this.lname,this.recid,this.jobTitle,this.department,this.hireDate,this.nis,this.trn,this.marry_status,this.email});
+  employee({this.deptid,this.depts, this.hr_team,this.pay_grade,this.pay_freq,this.pay_currency,this.pay_amount,this.pay_effective,this.pay_veh_allowance,this.sups,this.emp_status,this.job_category,this.mobile,this.hometel,this.eLocation,this.eCountry,this.address,this.city,this.country,this.dob,this.empno,this.fname,this.lname,this.recid,this.jobTitle,this.department,this.hireDate,this.nis,this.trn,this.marry_status,this.email});
 
   factory employee.fromJson(Map<String, dynamic> json) {
 
@@ -65,6 +66,7 @@ class employee
       lname: json['lname'],
       jobTitle: json['myJob']['jTitle']['title'],
       department: json['myJob']['edepartment']['name'],
+        deptid: json['myJob']['edepartment']['ID'],
       address:json['address'],
       city:json['city'],
       country: json['country'],
@@ -84,7 +86,41 @@ class employee
     );
   }
 
-
+  Map<String,dynamic> toMap() {
+    var map = new Map<String, dynamic>();
+    map["hr_team"] = hr_team;
+    map['salary']['pay_grade']['name']=pay_grade;
+    map['salary']['freq']=pay_freq;
+   map['salary']['currency']=pay_currency;
+    map['salary']['amount']=pay_amount;
+    map['salary']['recDate']=pay_effective;
+    map['salary']['vehAllow']=pay_veh_allowance;
+    map['empid']=empno;
+    map['recid']=recid;
+    map['fname']=fname;
+    map['lname']=lname;
+    map['myJob']['jTitle']['title']=jobTitle;
+    map['myJob']['edepartment']['name']=department;
+    map['myJob']['edepartment']['ID']=deptid;
+    map['address']=address;
+    map['city']=city;
+    map['country']=country;
+    map['emailwork']=email;
+    map['myJob']['elocation']['name']=eLocation;
+    eCountry: map['myJob']['elocation']['country']=eCountry;
+    map['dob']=dob;
+    map['mobile']=mobile;
+    map['hometel']=hometel;
+    map['trn']=trn;
+    map['nis']=nis;
+    map['myJob']['joindate']=hireDate;
+    map['myJob']['empStatus']['status']=emp_status;
+    map['myJob']['eCategory']['category']=job_category;
+    //sups: _tags,
+   // depts: _depts
+    // Add all other fields
+    return map;
+  }
 
 
 

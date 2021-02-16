@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "486793486438",
+    "project_id": "mangohrm-674ef",
+    "storage_bucket": "mangohrm-674ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486793486438:android:1c7039daa203842f8e4da7",
+        "android_client_info": {
+          "package_name": "com.digitalstorm.flutter_hrm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "486793486438-p18s624q8g0dptgju32v93fa2vth947g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHZoC-FzeiA6ao9DCTUtqApD6evUUgpus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "486793486438-p18s624q8g0dptgju32v93fa2vth947g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
