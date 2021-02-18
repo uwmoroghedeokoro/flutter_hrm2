@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hrm/company_info.dart';
 import 'package:flutter_hrm/employee.dart';
+import 'package:flutter_hrm/forgotPassword.dart';
 import 'package:flutter_hrm/main_dash.dart';
+import 'package:flutter_hrm/pageTransition.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -178,8 +180,12 @@ class _Login extends State<Login>{
                       )
                     ),
                     GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(pageTransition().createRoute(forgotPassword()));
+                      },
                       child: Container(
-                        child: Text('Forgot password',style:TextStyle(fontSize:13,color:Colors.blue,fontWeight:FontWeight.bold))
+                        padding: EdgeInsets.only(left:10,top:10),
+                        child: Text('Forgot password?',style:TextStyle(fontSize:15,color:Colors.blue,fontWeight:FontWeight.bold))
                       )
                     )
                   ],
