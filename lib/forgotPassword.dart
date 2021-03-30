@@ -10,6 +10,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flushbar/flushbar.dart';
+
+import 'login.dart';
 class forgotPassword extends StatefulWidget
 {
 
@@ -62,6 +65,7 @@ class _forgotP extends State<forgotPassword>
           home:Builder (
             builder: (context) =>
                 Scaffold(
+                ///  resizeToAvoidBottomInset: false,
                     key:_scaffoldKey,
                     appBar:AppBar(title:Text('Reset Password')),
                     body:
@@ -74,16 +78,21 @@ class _forgotP extends State<forgotPassword>
                           children: [
                             Expanded(
                                 flex: 1,
-                                child:Container(
-                                  padding: EdgeInsets.all(30.0),
+                                child:
+                                Container(
+                                 padding: EdgeInsets.all(30.0),
                                  // alignment: Alignment.bottomCenter,
-                                  child: Column(
+                                  child:
+
+                                  Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
 
                                       SizedBox(height: 50),
-                                      Text('Forgot your password?', style: TextStyle(fontSize: 25.0,color: Colors.black87,fontWeight:FontWeight.bold)),
-                                      SizedBox(height: 30),
+
+                                     Text('Forgot your password?', style: TextStyle(fontSize: 25.0,color: Colors.black87,fontWeight:FontWeight.bold)),
+
+                                        SizedBox(height: 30),
                                       Text('Enter your ' + companyIfo.company_name + ' employee number. A temporary password will be sent to your email address on file.',style:TextStyle(fontSize: 14.0,color: Colors.black,fontWeight: FontWeight.normal)),
                                       SizedBox(height: 30),
                                     ],
@@ -153,24 +162,16 @@ class _forgotP extends State<forgotPassword>
                                                         ),
                                                       ));
                                                   //  submit_request().whenComplete(() => Navigator.of(context).pushNamed("/Home"));
-                                                  employee res=await log_me_in();
+                                                  return_object _res=await reset_password();
                                                   //print (res);
-                                                  if (res.recid>0){
-                                                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> main_dash()), (Route<dynamic> route) => false);
+                                                 // if (res.recid>0){
+                                                   // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> main_dash()), (Route<dynamic> route) => false);
 
-                                                  }else
-                                                  {
-                                                    _scaffoldKey.currentState.showSnackBar(
-                                                        new SnackBar(duration: new Duration(seconds: 4),
-                                                          content:
-                                                          new Row(
-                                                            children: <Widget>[
-                                                              new Icon(Icons.error,color:Colors.red),
-                                                              new Text("  Username/Password incorrect")
-                                                            ],
-                                                          ),
-                                                        ));
-                                                  }
+                                                  //}else
+
+
+
+                                                 _showFlushbar(context,_res);
                                                 },
 
                                               )
@@ -192,29 +193,51 @@ class _forgotP extends State<forgotPassword>
 
   }
 
-  Future<employee> log_me_in() async {
+  void _showFlushbar(BuildContext context, return_object msg) {
+    Flushbar(
+      titleText: Text(
+        msg.msg,
+        style: TextStyle(color: Colors.white),
+      ),
+      messageText: Align(
+        alignment: Alignment.bottomRight,
+        child: InkWell(
+          onTap: () => msg.result==true?Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> Login()), (Route<dynamic> route) => false): print (''),
+          child: Text(
+            'CONTINUE ',
+            style: TextStyle(color: Colors.purple),
+          ),
+        ),
+      ),
+      isDismissible: false,
+      duration: Duration(seconds: 10), // to make it disappear after 5 seconds
+    )..show(context);
+  }
 
-    employee emp=employee();
-    final response = await http.get(companyIfo.api_endpoint + '/api/login/' + empNoCtr.text);
+
+
+  Future<return_object> reset_password() async {
+
+    return_object _return= return_object();
+    final response = await http.get(companyIfo.api_endpoint + '/api/reset/' + empNoCtr.text);
     bool res=false;
 
     print (response);
     if (response.statusCode == 200) {
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      emp= employee.fromJson(jsonDecode(response.body));
-      prefs.setInt('empid', emp.recid);
-      res=true;
+      _return=return_object(msg:response.body,result: true);
 
     } else {
-      emp.recid=-1;
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-
-      //throw Exception('Failed to load album');
+      _return=return_object(msg:response.body,result: false);
     }
-    return (emp);
+    return (_return);
     // return res;
   }
 
+}
+
+class return_object {
+ String msg;
+ bool result;
+  return_object({this.msg,this.result});
 }
